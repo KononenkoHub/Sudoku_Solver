@@ -13,18 +13,6 @@ field = sudoku.inputString
 N = 9
 
 
-'''
-field = [[5,1,7,6,0,0,0,3,0],
-         [2,8,9,0,0,4,0,0,0],
-         [3,4,6,2,0,5,0,9,0],
-         [6,0,2,0,0,0,0,1,0],
-         [0,3,8,0,0,6,0,4,7],
-         [0,0,0,0,0,0,0,0,0],
-         [0,9,0,0,0,0,0,7,8],
-         [7,0,3,4,0,0,5,6,0],
-         [0,0,0,0,0,0,0,0,0]]
-'''
-
 def print_board(field):
     if not field:
         output('No solution')
@@ -55,11 +43,26 @@ def read(field):
 
     return state
 
+def fileup(field):
+    f = open("static/out.html", "w")
+    if not field:
+        f.write('<h1 style="text-align:center; margin-top:180px; color:gray;">No solution. Load other picture...<h1>')
+    else:
+        f.write(
+            '<table border="1"  bordercolor="#484848" width="350px" height="350px" style="text-align:center; font-size:25px;" bgcolor="#E8E8E8" > <tr>')
+        for item in range(len(solve(state))):
+            if item % 1 == 0 and item != 0:
+                f.write("</tr> <tr>")
+            for i in solve(state)[item]:
+                f.write('<td>' + str(i) + '</td>')
+
+        f.write('</tr> </table>')
+
+
 state = read(field)
 
 
 def done(state):
-    """ Are we done? """
 
     for row in state:
         for cell in row:
@@ -69,13 +72,6 @@ def done(state):
 
 
 def propagate_step(state):
-    """
-    Propagate one step.
-
-    @return:  A two-tuple that says whether the configuration
-              is solvable and whether the propagation changed
-              the state.
-    """
 
     new_units = False
 
@@ -133,7 +129,7 @@ def propagate_step(state):
     return True, new_units
 
 def propagate(state):
-    """ Propagate until we reach a fixpoint """
+
     while True:
         solvable, new_unit = propagate_step(state)
         if not solvable:
@@ -143,7 +139,7 @@ def propagate(state):
 
 
 def solve(state):
-    """ Solve sudoku """
+
 
     solvable = propagate(state)
 
@@ -167,20 +163,7 @@ def solve(state):
                 return None
 
 
-def fileup(field):
-    f = open("static/out.html", "w")
-    if not field:
-        f.write('<h1 style="text-align:center; margin-top:180px; color:gray;">No solution. Load other picture...<h1>')
-    else:
-        f.write(
-            '<table border="1"  bordercolor="#484848" width="350px" height="350px" style="text-align:center; font-size:25px;" bgcolor="#E8E8E8" > <tr>')
-        for item in range(len(solve(state))):
-            if item % 1 == 0 and item != 0:
-                f.write("</tr> <tr>")
-            for i in solve(state)[item]:
-                f.write('<td>' + str(i) + '</td>')
 
-        f.write('</tr> </table>')
 
 
 if __name__ == "__main__":
