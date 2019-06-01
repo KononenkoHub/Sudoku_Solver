@@ -10,7 +10,8 @@ def output(a):
    
 field = sudoku.inputString
 
-N = 9
+spaceSize = 9
+blockSize =3
 
 
 def print_board(field):
@@ -19,11 +20,11 @@ def print_board(field):
 
         return
     for i in range(len(field)):
-        if i % 3 == 0 and i != 0:
+        if i % blockSize == 0 and i != 0:
             print("- - - - - - - - - - - -")
 
         for j in range(len(field[0])):
-            if j % 3 == 0 and j != 0:
+            if j % blockSize == 0 and j != 0:
                 print(" | ", end="")
 
             if j == 8:
@@ -35,8 +36,8 @@ def read(field):
     """ Read field into state (replace 0 with set of possible values) """
 
     state = deepcopy(field)
-    for i in range(N):
-        for j in range(N):
+    for i in range(spaceSize):
+        for j in range(spaceSize):
             cell = state[i][j]
             if cell == 0:
                 state[i][j] = set(range(1,10))
@@ -76,10 +77,10 @@ def propagate_step(state):
     new_units = False
 
     # propagate row rule
-    for i in range(N):
+    for i in range(spaceSize):
         row = state[i]
         values = set([x for x in row if not isinstance(x, set)])
-        for j in range(N):
+        for j in range(spaceSize):
             if isinstance(state[i][j], set):
                 state[i][j] -= values
                 if len(state[i][j]) == 1:
@@ -91,10 +92,10 @@ def propagate_step(state):
                     return False, None
 
     # propagate column rule
-    for j in range(N):
-        column = [state[x][j] for x in range(N)]
+    for j in range(spaceSize):
+        column = [state[x][j] for x in range(spaceSize)]
         values = set([x for x in column if not isinstance(x, set)])
-        for i in range(N):
+        for i in range(spaceSize):
             if isinstance(state[i][j], set):
                 state[i][j] -= values
                 if len(state[i][j]) == 1:
@@ -106,16 +107,16 @@ def propagate_step(state):
                     return False, None
 
     # propagate cell rule
-    for x in range(3):
-        for y in range(3):
+    for x in range(blockSize):
+        for y in range(blockSize):
             values = set()
-            for i in range(3 * x, 3 * x + 3):
-                for j in range(3 * y, 3 * y + 3):
+            for i in range(blockSize * x, blockSize * x + blockSize):
+                for j in range(blockSize * y, blockSize * y + blockSize):
                     cell = state[i][j]
                     if not isinstance(cell, set):
                         values.add(cell)
-            for i in range(3 * x, 3 * x + 3):
-                for j in range(3 * y, 3 * y + 3):
+            for i in range(blockSize * x, blockSize * x + blockSize):
+                for j in range(blockSize * y, blockSize * y + blockSize):
                     if isinstance(state[i][j], set):
                         state[i][j] -= values
                         if len(state[i][j]) == 1:
@@ -150,8 +151,8 @@ def solve(state):
 
         return state
 
-    for i in range(N):
-        for j in range(N):
+    for i in range(spaceSize):
+        for j in range(spaceSize):
             cell = state[i][j]
             if isinstance(cell, set):
                 for value in cell:
